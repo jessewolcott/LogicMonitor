@@ -31,18 +31,32 @@ $LMInventoryCSV = @()
 
 foreach ($Server in $Serverlist){
     Write-Output "Checking $Server"
-    if (Test-Connection $Server -Quiet) 
-        {$IP = ([System.Net.Dns]::GetHostAddresses($Server)).IPAddressToString}
-        Else { $IP = '' }
-
-    $DisplayName = "$Server"+"$DomainTLD"
-    $LMInventoryCSV += [PSCustomObject]@{
-                'IP'            = $IP
-                'DisplayName'   = $DisplayName
-                'Group'         = 'Default'
+    if (Test-Connection $Server -Quiet) {
+        $IPCheck = ([System.Net.Dns]::GetHostAddresses($Server)).IPAddressToString | Where-Object {$_ -like "*.*.*.*"}
+        if ($null -ne $IPCheck) {
+            $DisplayName = "$Server"+"."+"$DomainTLD"
+            if (($IPCheck.Count) -gt 1){               
+                    $LMInventoryCSV += [PSCustomObject]@{
+                        'IP'            = $IPCheck[0]
+                        'DisplayName'   = $DisplayName
+                        'Group'         = 'Default'
+                        }
+                        }
+                    Else {
+                        $LMInventoryCSV += [PSCustomObject]@{
+                            'IP'            = $IPCheck
+                            'DisplayName'   = $DisplayName
+                            'Group'         = 'Default'
+                            }
+                    }
+                }
+            Else { Write-Output "$Server does not have an IP. Skipping."}
+                }
+        Else { Write-Output "$Server not reachable" }
+            Write-Output "Next!"
         }
-    Write-Output "Next!"
-    }
+
+    
 
 
 $LMInventoryCSV | Export-CSV -Path "$PSScriptRoot\LogicMonitorImport-$Today.csv" -Force -NoTypeInformation
