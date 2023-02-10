@@ -1,4 +1,5 @@
 -- Use this script to add a user to your database to monitor with LogicMonitor
+-- Slightly more fleshed out version of https://www.logicmonitor.com/support/monitoring/applications-databases/microsoft-sql-server/
 
 -- Enter username here
 DECLARE @username VARCHAR(100)
