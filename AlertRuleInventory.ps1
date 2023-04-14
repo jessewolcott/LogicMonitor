@@ -1,3 +1,7 @@
+# Output an "inventory" of your Alert Rules. Built on the Logic.Monitor module by Steve Villardi at https://github.com/stevevillardi/Logic.Monitor
+
+Update-Module Logic.Monitor -Confirm:$false
+
 <# Use TLS 1.2 #>
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
@@ -12,16 +16,13 @@ $AlertRuleInventory  = Get-LMAlertRule
 $EscalationInventory = Get-LMEscalationChain
 
 $EscalationPathsInUse = foreach ($ID in (($AlertRuleInventory.escalatingChainId) | Select-Object -Unique)){
-    Get-LMEscalationChain -id $ID
+    $EscalationInventory | Where-Object {$_.id -eq  $ID}
                         }
 
 $Results = @()
 
 foreach ($Alertrule in $AlertRuleInventory){
     
-    $AlertID        = [int]($Alertrule.escalatingChainID)
-    $EscalationName = ($EscalationPathsInUse | Where-Object {$_.Name -like $AlertID})
-
     $Results += [PSCustomObject]@{
         'Alert ID'                      = ($Alertrule.id)
         'Alert Rule'                    = ($Alertrule.name)
