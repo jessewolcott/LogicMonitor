@@ -6,9 +6,6 @@ Update-Module PSMarkdown
 <# Use TLS 1.2 #>
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-<# Use TLS 1.2 #>
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
 <# account info #>
 $accessId = ''
 $accessKey = ''
