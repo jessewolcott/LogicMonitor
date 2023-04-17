@@ -1,6 +1,10 @@
 # Output an "inventory" of your Alert Rules. Built on the Logic.Monitor module by Steve Villardi at https://github.com/stevevillardi/Logic.Monitor
 
 Update-Module Logic.Monitor -Confirm:$false
+Update-Module PSMarkdown
+
+<# Use TLS 1.2 #>
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
 <# Use TLS 1.2 #>
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -32,9 +36,11 @@ foreach ($Alertrule in $AlertRuleInventory){
         'Alert Throttling Count'        = ($EscalationPathsInUse | Where-Object {$_.id -EQ ($Alertrule.escalatingChainId)}).throttlingalerts
         'Escalation Chain Name'         = ($EscalationPathsInUse | Where-Object {$_.id -EQ ($Alertrule.escalatingChainId)}).Name
         'Escalation Chain Description'  = ($EscalationPathsInUse | Where-Object {$_.id -EQ ($Alertrule.escalatingChainId)}).description
+        'Escalation Chain Stages'       = @(((($EscalationPathsInUse | Where-Object {$_.id -EQ ($Alertrule.escalatingChainId)}).destinations).stages).addr)
         'Escalation Interval'           = ($Alertrule.escalationInterval)
         }
     }
 
 $Results | Out-GridView
-            
+#$Results | ConvertTo-Excel -FilePath "$Psscriptroot\LogicMonitor-AlertRulesInventory.xlsx" -AutoFilter -AutoFit -FreezeTopRow -ExcelWorkSheetName "Alert Rules"
+#$Results | ConvertTo-Markdown | Out-File -filePath "LogicMonitor-AlertRulesInventory.md"
